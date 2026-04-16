@@ -516,20 +516,20 @@
       const ing = INGREDIENTS.find(i => i.id === id);
       const name = ing ? `${ing.emoji} ${ing.name}` : id;
       const inMarket = state.marketList.includes(id);
-      return `<span class="selected-tag" style="background: var(--bg-hover); color: var(--text-primary); display:flex; align-items:center; gap:8px; padding-right: 4px; font-size: 0.85rem;">
+      return `<span class="selected-tag" style="background: rgba(255,255,255,0.15); color: #FFF; display:flex; align-items:center; gap:8px; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem;">
                 ${name} 
-                <button aria-label="Add to Market" onclick="window.toggleMarketItem('${id}'); this.innerHTML='✓'; this.style.background='var(--primary-color)';" style="background:${inMarket ? 'var(--primary-color)' : 'rgba(0,0,0,0.1)'}; border:none; border-radius:50%; color:white; width:22px; height:22px; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Add to Shopping List">${inMarket ? '✓' : '+'}</button>
+                <button aria-label="Add to Market" onclick="window.toggleMarketItem('${id}'); this.innerHTML='✓'; this.style.background='var(--primary-light)';" style="background:${inMarket ? 'var(--primary-light)' : 'rgba(255,255,255,0.2)'}; border:none; border-radius:50%; color:white; width:22px; height:22px; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Add to Shopping List">${inMarket ? '✓' : '+'}</button>
               </span>`;
     }).join('');
 
     els.recipeBody.innerHTML = `
       <h2 class="modal-dish-name">${dish.name}</h2>
       <div class="modal-meta">
-        <span class="badge badge-tamil">🏛️ Tamil Nadu</span>
-        <span class="badge ${dish.isVeg ? 'badge-veg' : 'badge-nonveg'}">
+        <span class="badge" style="background: rgba(255,255,255,0.2); color: #FFF;">🏛️ ${dish.cuisine_type}</span>
+        <span class="badge" style="background: rgba(255,255,255,0.2); color: #FFF;">
           ${dish.isVeg ? '🥬 Veg' : '🍗 Non-Veg'}
         </span>
-        <span class="badge" style="background: #f3e5f5; color: #7b1fa2;">
+        <span class="badge" style="background: rgba(255,255,255,0.2); color: #FFF;">
           ⏱️ ${dish.prep_time} min
         </span>
       </div>
@@ -545,13 +545,13 @@
         <button onclick="window.togglePrepItem('prep_idli', true); window.showToast('Added to Tonight\\'s Prep 🕒');" style="background:#2196f3; color:white; border:none; border-radius:4px; padding:4px 8px; font-size:0.75rem; cursor:pointer;">Add to Prep</button>
       </div>` : ''}
 
-      <div class="section-title"><span class="icon">🥘</span> Ingredients</div>
+      <div class="section-title modal-title-override"><span class="icon">🥘</span> Ingredients</div>
       <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px;">
         ${ingredientHtml}
       </div>
 
-      <div class="section-title"><span class="icon">👨‍🍳</span> Instructions</div>
-      <ol style="margin-bottom: 20px; padding-left: 20px; color: var(--text-secondary); font-size: 0.95rem;">
+      <div class="section-title modal-title-override"><span class="icon">👨‍🍳</span> Instructions</div>
+      <ol class="recipe-ol-override" style="margin-bottom: 20px; padding-left: 20px; color: #F1F8E9; font-size: 0.95rem;">
         ${(dish.steps || []).map(step => `<li style="margin-bottom: 8px;">${step}</li>`).join('')}
       </ol>
 

@@ -5,17 +5,19 @@
 
 /* ─── CSS Variables ─────────────────────────────────────────── */
 :root {
-  --primary: #e65100;
-  --primary-light: #ff7d47;
-  --primary-dark: #ac1900;
-  --accent: #ff9800;
-  --accent-light: #ffc947;
-  --surface: #fff8f0;
-  --surface-card: #ffffff;
-  --surface-elevated: rgba(255, 255, 255, 0.92);
-  --text-primary: #3e2723;
-  --text-secondary: #6d4c41;
-  --text-muted: #9e8e87;
+  /* Manjal (Turmeric) & Kumkumam (Vermilion) Palette */
+  --primary: #A31D1D;
+  --primary-light: #C62828;
+  --primary-dark: #7F0000;
+  --accent: #FFB300;
+  --accent-light: #FFCA28;
+  --surface: #FFFDF9; /* Earthy Rice White */
+  --surface-card: #FFFFFF;
+  --surface-elevated: rgba(255, 255, 255, 0.95);
+  /* Filter Kaapi Brown Text */
+  --text-primary: #3E2723;
+  --text-secondary: #5D4037;
+  --text-muted: #8D6E63;
   --veg: #2e7d32;
   --veg-bg: #e8f5e9;
   --nonveg: #c62828;
@@ -59,6 +61,23 @@ body {
   min-height: 100dvh;
   overflow-x: hidden;
   position: relative;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%;
+  z-index: -2;
+  opacity: 0.12; /* Increased heavily so it's clearly visible */
+  pointer-events: none;
+  background-image: 
+    radial-gradient(var(--primary-dark) 3px, transparent 4px),
+    radial-gradient(var(--primary-dark) 3px, transparent 4px);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
 }
 
 body::before {
@@ -619,8 +638,9 @@ body::before {
 }
 
 .modal-content {
-  background: var(--surface-card);
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: #1B5E20; /* Vazhai Ilai (Banana Leaf Green) */
+  color: #F1F8E9; /* Off-white for banana leaf */
+  border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 480px;
   max-height: 85vh;
@@ -628,6 +648,7 @@ body::before {
   transform: translateY(100%);
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
   padding: 24px 20px 40px;
+  box-shadow: inset 0 6px 15px rgba(0,0,0,0.25);
 }
 
 .modal-overlay.active .modal-content {
@@ -637,7 +658,7 @@ body::before {
 .modal-handle {
   width: 40px;
   height: 4px;
-  background: #d4c5bc;
+  background: rgba(255, 255, 255, 0.4);
   border-radius: 4px;
   margin: 0 auto 20px;
 }
@@ -647,6 +668,11 @@ body::before {
   font-weight: 800;
   margin-bottom: 12px;
   line-height: 1.3;
+  color: #FFFFFF;
+}
+
+.modal-title-override {
+  color: #FFFFFF !important;
 }
 
 .modal-meta {
@@ -671,7 +697,7 @@ body::before {
   display: flex;
   gap: 14px;
   padding: 14px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   align-items: flex-start;
 }
 
@@ -695,7 +721,7 @@ body::before {
 
 .step-text {
   font-size: 0.92rem;
-  color: var(--text-primary);
+  color: #F1F8E9;
   line-height: 1.5;
   padding-top: 4px;
 }
