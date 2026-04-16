@@ -25,6 +25,7 @@
       dinner: false,
       snack: false
     },
+    regionFilter: null,
     currentView: 'home',
     history: [],      // [{ dishId, date }]
     favorites: [],    // [dishId]
@@ -43,6 +44,7 @@
     ingredientGrid: $('#ingredientGrid'),
     ingredientCount: $('#ingredientCount'),
     selectedSummary: $('#selectedSummary'),
+    regionBar: $('#regionBar'),
     filterBar: $('#filterBar'),
     findDishesBtn: $('#findDishesBtn'),
     surpriseMeBtn: $('#surpriseMeBtn'),
@@ -150,7 +152,14 @@
     
     order.forEach(cat => {
       if (grouped[cat] && grouped[cat].length > 0) {
-        html += `<div style="grid-column: 1 / -1; margin: 15px 0 5px; font-weight: bold; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">${categoryLabels[cat]}</div>`;
+        // By default, open 'leftovers', 'vegetable', and 'protein'
+        const isOpen = ['leftovers', 'vegetable', 'protein'].includes(cat) ? 'open' : '';
+        html += `
+          <details class="category-details" ${isOpen}>
+            <summary class="category-summary">${categoryLabels[cat]}</summary>
+            <div class="category-grid">
+        `;
+        
         html += grouped[cat].map(ing => `
           <button class="ingredient-btn ${state.selectedIngredients.includes(ing.id) ? 'selected' : ''}"
                   data-id="${ing.id}"
@@ -161,6 +170,11 @@
             <span class="label">${ing.name}</span>
           </button>
         `).join('');
+
+        html += `
+            </div>
+          </details>
+        `;
       }
     });
 
@@ -328,6 +342,11 @@
     if (filters.lunch) candidates = candidates.filter(c => c.dish.meal_type === 'lunch');
     if (filters.dinner) candidates = candidates.filter(c => c.dish.meal_type === 'dinner');
     if (filters.snack) candidates = candidates.filter(c => c.dish.meal_type === 'snack');
+
+    // Apply Region Filter
+    if (state.regionFilter) {
+      candidates = candidates.filter(c => c.dish.cuisine_type && c.dish.cuisine_type.includes(state.regionFilter));
+    }
 
     // If ingredients selected, filter by intent
     if (selected.length > 0) {
@@ -880,6 +899,29 @@
       toggleIngredient(tag.dataset.id);
     });
 
+    // ── Explore Regions ──
+    if (els.regionBar) {
+      els.regionBar.addEventListener('click', (e) => {
+        const chip = e.target.closest('.region-chip');
+        if (!chip) return;
+        
+        const region = chip.dataset.region;
+        
+        if (state.regionFilter === region) {
+          state.regionFilter = null;
+          chip.classList.remove('active');
+        } else {
+          state.regionFilter = region;
+          $$('.region-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+        }
+        
+        // Auto-run search
+        els.findDishesBtn.disabled = false; // Ensure it can be clicked
+        els.findDishesBtn.click();
+      });
+    }
+
     // ── Filter Chips ──
     els.filterBar.addEventListener('click', (e) => {
       const chip = e.target.closest('.filter-chip');
@@ -893,7 +935,10 @@
       renderSuggestions(results);
 
       // Update intro text
-      if (state.filters.nonveg) {
+      if (state.regionFilter) {
+        els.suggestionIntro.querySelector('.intro-text').innerHTML =
+          `<strong>🗺️ ${state.regionFilter} Special!</strong> Exploring regional kitchen masterpieces!`;
+      } else if (state.filters.nonveg) {
         els.suggestionIntro.querySelector('.intro-text').innerHTML =
           '<strong>🍗 Sunday Special!</strong> Here are an authentic set of South Indian Non-Veg treats!';
       } else if (state.selectedIngredients.length === 0) {

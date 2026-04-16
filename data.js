@@ -39,6 +39,7 @@ const INGREDIENTS = [
   { id: 'egg',              name: 'Muttai (Egg)',             emoji: '🥚', category: 'protein' },
   { id: 'fish',             name: 'Meen (Fish)',              emoji: '🐟', category: 'protein' },
   { id: 'prawn',            name: 'Eral (Prawn)',             emoji: '🦐', category: 'protein' },
+  { id: 'crab',             name: 'Nandu (Crab)',             emoji: '🦀', category: 'protein' },
 
   // ── Pantry Staples & Masala ──
   { id: 'coconut',          name: 'Thengai (Coconut)',        emoji: '🥥', category: 'pantry' },
@@ -58,6 +59,10 @@ const INGREDIENTS = [
   { id: 'fennel',           name: 'Sompu (Fennel Seeds)',     emoji: '🌿', category: 'pantry' },
   { id: 'whole_spices',     name: 'Pattai Lavangam (Spices)', emoji: '🍂', category: 'pantry' },
   { id: 'mint_leaves',      name: 'Pudhina (Mint)',           emoji: '🌿', category: 'pantry' },
+  { id: 'coconut_oil',      name: 'Thengai Ennai',            emoji: '🥥', category: 'pantry' },
+  { id: 'asafoetida',       name: 'Perungayam (Hing)',        emoji: '🪴', category: 'pantry' },
+  { id: 'cashews',          name: 'Mundhiri (Cashews)',       emoji: '🥜', category: 'pantry' },
+  { id: 'vathal',           name: 'Sundakkai Vathal',         emoji: '🫐', category: 'pantry' },
 
   // ── Grains & Dals ──
   { id: 'rice',             name: 'Arisi (Normal Rice)',      emoji: '🍚', category: 'grain' },
@@ -71,6 +76,8 @@ const INGREDIENTS = [
   { id: 'rice_flour',       name: 'Arisi Maavu',              emoji: '🍘', category: 'grain' },
   { id: 'wheat_flour',      name: 'Godhumai Maavu',           emoji: '🌾', category: 'grain' },
   { id: 'vermicelli',       name: 'Semiya',                   emoji: '🍝', category: 'grain' },
+  { id: 'horsegram',        name: 'Kollu (Horsegram)',        emoji: '🟤', category: 'grain' },
+  { id: 'parotta',          name: 'Parotta / Maida',          emoji: '🫓', category: 'grain' },
 
   // ── Leftovers (Zero Waste) ──
   { id: 'leftover_rice',    name: 'Pazhaiya Sadam (Old Rice)',  emoji: '🍚', category: 'leftovers' },
@@ -1487,6 +1494,157 @@ const DISHES = [
       'Cook the basmati rice directly in this meat milk/broth',
       'Layer the cooked meat and the flavored rice in copper vessels',
       'Seal tightly with dough and let the subtle floral aromas steep into the rice'
+    ]
+  },
+
+  // ════════════════════════════════════════════════════════════════
+  //  THE REGIONAL EXPERIENCES (Kongu, Chettinad, Madurai, Nanjil)
+  // ════════════════════════════════════════════════════════════════
+  {
+    id: 'kongu_paruppu_sadam',
+    name: 'Kongu Arisi Paruppu Sadam',
+    cuisine_type: 'Kongunadu',
+    meal_type: 'lunch',
+    ingredients: ['rice', 'toor_dal', 'onion', 'tomato', 'garlic', 'cumin'],
+    isVeg: true,
+    prep_time: 20,
+    effort_level: 'low',
+    spice_level: 'medium',
+    serves_with: 'Potato Fry & Ghee',
+    steps: [
+      'In a pressure cooker, temper mustard, cumin, and lots of garlic in coconut oil',
+      'Sauté shallots and tomatoes until soft',
+      'Add soaked rice, toor dal, turmeric, and exact 1:3 water ratio',
+      'Pressure cook for 3 whistles until extremely mushy and flavourful',
+      'Serve hot with a massive spoonful of pure ghee'
+    ]
+  },
+  {
+    id: 'kollu_rasam',
+    name: 'Kongunadu Kollu Rasam (Horsegram)',
+    cuisine_type: 'Kongunadu',
+    meal_type: 'lunch',
+    ingredients: ['horsegram', 'tamarind', 'tomato', 'garlic', 'pepper', 'cumin', 'coriander'],
+    isVeg: true,
+    prep_time: 30,
+    effort_level: 'medium',
+    spice_level: 'hot',
+    serves_with: 'White Rice',
+    steps: [
+      'Dry roast horsegram and pressure cook until extremely soft (save the dark water!)',
+      'Grind half the cooked horsegram with pepper, garlic, and cumin into a paste',
+      'Mix the paste, tamarind extract, and the horsegram water together',
+      'Temper with mustard and curry leaves, then simmer until frothy (Do not boil hard!)'
+    ]
+  },
+  {
+    id: 'vellai_kurma',
+    name: 'Chettinad Vellai Kurma',
+    cuisine_type: 'Chettinad',
+    meal_type: 'dinner',
+    ingredients: ['cashews', 'coconut', 'potato', 'carrot', 'beans', 'fennel', 'green_chili'],
+    isVeg: true,
+    prep_time: 40,
+    effort_level: 'high',
+    spice_level: 'mild',
+    serves_with: 'Idiyappam or Parotta',
+    steps: [
+      'Soak cashews and grind them into a rich, silky paste with fresh coconut and fennel seeds',
+      'Boil chopped root vegetables until barely tender (Do NOT use turmeric or red chili!)',
+      'Temper whole spices in oil, add the vegetables and the white cashew-coconut paste',
+      'Simmer gently until the oil shines through the pure white gravy'
+    ]
+  },
+  {
+    id: 'kanyakumari_avial',
+    name: 'Nanjil Nadu Avial',
+    cuisine_type: 'Nanjil Nadu',
+    meal_type: 'lunch',
+    ingredients: ['carrot', 'beans', 'raw_banana', 'drumstick', 'coconut', 'curd', 'cumin', 'coconut_oil'],
+    isVeg: true,
+    prep_time: 30,
+    effort_level: 'medium',
+    spice_level: 'mild',
+    serves_with: 'Adai or Rice',
+    steps: [
+      'Chop all vegetables into identical long batons',
+      'Cook them in minimum water until just fork-tender',
+      'Grind coconut, green chilies, and cumin without water',
+      'Mix the paste and sour curd into the vegetables off the heat',
+      'Finish by drizzling raw coconut oil and adding fresh curry leaves'
+    ]
+  },
+  {
+    id: 'nandu_masala',
+    name: 'Nanjil Nandu (Crab) Roast',
+    cuisine_type: 'Nanjil Nadu',
+    meal_type: 'lunch',
+    ingredients: ['crab', 'coconut', 'fennel', 'pepper', 'onion', 'tomato', 'ginger', 'garlic'],
+    isVeg: false,
+    prep_time: 40,
+    effort_level: 'high',
+    spice_level: 'hot',
+    serves_with: 'White Rice',
+    steps: [
+      'Clean crab thoroughly (retain the claws)',
+      'Sauté onions, tomatoes, and ginger-garlic paste into a heavy dark masala',
+      'Toss the crab in the masala and cook covered; it will release its own sweet juices',
+      'Finish by heavily coating the crab in a dry roasted coconut-fennel-pepper paste'
+    ]
+  },
+  {
+    id: 'madurai_kari_dosa',
+    name: 'Madurai Kari Dosa',
+    cuisine_type: 'Madurai',
+    meal_type: 'dinner',
+    ingredients: ['batter_fermented', 'mutton', 'egg', 'onion', 'pepper', 'ginger', 'garlic'],
+    isVeg: false,
+    prep_time: 25,
+    effort_level: 'medium',
+    spice_level: 'hot',
+    serves_with: 'Mutton Salna',
+    steps: [
+      'Pour a thick kal dosa onto a hot tawa (do not spread it too thin)',
+      'Beat an egg with pepper and salt, and pour it evenly over the wet dosa',
+      'Immediately top with heavily spiced semi-dry mutton minced chukka/kheema',
+      'Drizzle with oil or ghee, flip carefully, and roast until the meat side chars slightly'
+    ]
+  },
+  {
+    id: 'kothu_parotta',
+    name: 'Madurai Kothu Parotta',
+    cuisine_type: 'Madurai',
+    meal_type: 'dinner',
+    ingredients: ['parotta', 'chicken', 'egg', 'onion', 'tomato', 'curry_leaves', 'pepper'],
+    isVeg: false,
+    prep_time: 20,
+    effort_level: 'medium',
+    spice_level: 'hot',
+    serves_with: 'Onion Raita',
+    steps: [
+      'Shred flaky parottas into small bite-sized pieces',
+      'Fry onions, tomatoes, and curry leaves heavily on a flat tawa',
+      'Pour in beaten eggs and scramble them directly on the tawa',
+      'Add shredded parotta and chicken salna (gravy), then beat/chop them aggressively together until completely mixed'
+    ]
+  },
+  {
+    id: 'vathal_kuzhambu',
+    name: 'Agraharam Vathal Kuzhambu',
+    cuisine_type: 'Agraharam',
+    meal_type: 'lunch',
+    ingredients: ['vathal', 'tamarind', 'asafoetida', 'mustard', 'jaggery', 'curry_leaves'],
+    isVeg: true,
+    prep_time: 30,
+    effort_level: 'medium',
+    spice_level: 'medium',
+    serves_with: 'Rice & Appalam',
+    steps: [
+      'Strictly NO ONION OR GARLIC! Extract a very thick, dark tamarind juice',
+      'Roast the dried turkey berries (vathal) in sesame oil until almost black, keep aside',
+      'Temper mustard, fenugreek, and a large pinch of asafoetida (hing)',
+      'Pour in tamarind juice, basic chili powders, and boil heavily until it reduces and thickens',
+      'Add roasted vathal and a tiny piece of jaggery to balance the tanginess'
     ]
   }
 ];
