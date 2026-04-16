@@ -35,22 +35,34 @@ const INGREDIENTS = [
 
   // ── Protein ──
   { id: 'chicken',          name: 'Kozhi (Chicken)',          emoji: '🍗', category: 'protein' },
+  { id: 'mutton',           name: 'Aattu Iraichi (Mutton)',   emoji: '🥩', category: 'protein' },
   { id: 'egg',              name: 'Muttai (Egg)',             emoji: '🥚', category: 'protein' },
   { id: 'fish',             name: 'Meen (Fish)',              emoji: '🐟', category: 'protein' },
   { id: 'prawn',            name: 'Eral (Prawn)',             emoji: '🦐', category: 'protein' },
 
-  // ── Pantry Staples ──
+  // ── Pantry Staples & Masala ──
   { id: 'coconut',          name: 'Thengai (Coconut)',        emoji: '🥥', category: 'pantry' },
   { id: 'curry_leaves',     name: 'Karuveppilai',             emoji: '🌿', category: 'pantry' },
+  { id: 'coriander',        name: 'Kothamalli (Coriander)',   emoji: '🌿', category: 'pantry' },
   { id: 'tamarind',         name: 'Puli (Tamarind)',          emoji: '🟤', category: 'pantry' },
   { id: 'curd',             name: 'Thayir (Curd)',            emoji: '🥛', category: 'pantry' },
   { id: 'garlic',           name: 'Poondu (Garlic)',          emoji: '🧄', category: 'pantry' },
   { id: 'green_chili',      name: 'Pachai Milagai',           emoji: '🌶️', category: 'pantry' },
   { id: 'ghee',             name: 'Nei (Ghee)',               emoji: '🧈', category: 'pantry' },
   { id: 'jaggery',          name: 'Vellam (Jaggery)',         emoji: '🟫', category: 'pantry' },
+  { id: 'mustard',          name: 'Kadugu (Mustard)',         emoji: '🟤', category: 'pantry' },
+  { id: 'cumin',            name: 'Seeragam (Cumin)',         emoji: '🌱', category: 'pantry' },
+  { id: 'pepper',           name: 'Milagu (Pepper)',          emoji: '⚫', category: 'pantry' },
+  { id: 'turmeric',         name: 'Manjal (Turmeric)',        emoji: '🟡', category: 'pantry' },
+  { id: 'ginger',           name: 'Inji (Ginger)',            emoji: '🫚', category: 'pantry' },
+  { id: 'fennel',           name: 'Sompu (Fennel Seeds)',     emoji: '🌿', category: 'pantry' },
+  { id: 'whole_spices',     name: 'Pattai Lavangam (Spices)', emoji: '🍂', category: 'pantry' },
+  { id: 'mint_leaves',      name: 'Pudhina (Mint)',           emoji: '🌿', category: 'pantry' },
 
   // ── Grains & Dals ──
-  { id: 'rice',             name: 'Arisi (Rice)',             emoji: '🍚', category: 'grain' },
+  { id: 'rice',             name: 'Arisi (Normal Rice)',      emoji: '🍚', category: 'grain' },
+  { id: 'basmati_rice',     name: 'Basmati Rice',             emoji: '🍚', category: 'grain' },
+  { id: 'seeraga_samba',    name: 'Seeraga Samba (Biryani)',  emoji: '🌾', category: 'grain' },
   { id: 'toor_dal',         name: 'Thuvaram Paruppu',         emoji: '🟡', category: 'grain' },
   { id: 'moong_dal',        name: 'Payatham Paruppu',         emoji: '🟢', category: 'grain' },
   { id: 'chana_dal',        name: 'Kadalai Paruppu',          emoji: '🟤', category: 'grain' },
@@ -59,6 +71,11 @@ const INGREDIENTS = [
   { id: 'rice_flour',       name: 'Arisi Maavu',              emoji: '🍘', category: 'grain' },
   { id: 'wheat_flour',      name: 'Godhumai Maavu',           emoji: '🌾', category: 'grain' },
   { id: 'vermicelli',       name: 'Semiya',                   emoji: '🍝', category: 'grain' },
+
+  // ── Leftovers (Zero Waste) ──
+  { id: 'leftover_rice',    name: 'Pazhaiya Sadam (Old Rice)',  emoji: '🍚', category: 'leftovers' },
+  { id: 'leftover_idli',    name: 'Meethi Idli (Leftover Idli)',emoji: '🥟', category: 'leftovers' },
+  { id: 'sour_curd',        name: 'Pulitha Thayir (Sour Curd)', emoji: '🥛', category: 'leftovers' },
 
   // ── Batter States ──
   // This is the KEY feature: your batter status determines what tiffin you can make
@@ -1124,4 +1141,352 @@ const DISHES = [
       'Cook till it comes together, add ghee & cardamom'
     ]
   },
+
+  // ════════════════════════════════════════════════════════════════
+  //  LEFTOVER RESCUE
+  // ════════════════════════════════════════════════════════════════
+  {
+    id: 'lemon_rice',
+    name: 'Elumichai Sadam (Lemon Rice)',
+    cuisine_type: 'Tamil',
+    meal_type: 'lunch',
+    ingredients: ['leftover_rice', 'green_chili', 'curry_leaves', 'turmeric', 'mustard'],
+    isVeg: true,
+    prep_time: 10,
+    effort_level: 'low',
+    spice_level: 'medium',
+    serves_with: 'Potato Fry & Pickle',
+    steps: [
+      'Crumble leftover rice so it is grain-separated',
+      'Temper mustard, chana dal, peanuts, curry leaves, green chili',
+      'Turn off heat, add turmeric and squeeze fresh lemon juice',
+      'Mix thoroughly with rice and salt'
+    ]
+  },
+  {
+    id: 'idli_upma',
+    name: 'Idli Upma',
+    cuisine_type: 'Tamil',
+    meal_type: 'breakfast',
+    ingredients: ['leftover_idli', 'onion', 'curry_leaves', 'green_chili', 'mustard'],
+    isVeg: true,
+    prep_time: 10,
+    effort_level: 'low',
+    spice_level: 'medium',
+    serves_with: 'Chutney or Podi',
+    steps: [
+      'Crumble the leftover cold idlis into small pieces',
+      'Temper mustard, urad dal, curry leaves',
+      'Sauté chopped onions and green chili until soft',
+      'Add crumbled idli, a dash of turmeric, and toss well'
+    ]
+  },
+  {
+    id: 'mor_kuzhambu_leftover',
+    name: 'Mor Kuzhambu (Sour Curd)',
+    cuisine_type: 'Tamil',
+    meal_type: 'lunch',
+    ingredients: ['sour_curd', 'coconut', 'green_chili', 'cumin', 'curry_leaves'],
+    isVeg: true,
+    prep_time: 15,
+    effort_level: 'low',
+    spice_level: 'mild',
+    serves_with: 'Rice & Beans Poriyal',
+    steps: [
+      'Whisk leftover sour curd with water and salt',
+      'Grind coconut, cumin, and green chili to a fine paste',
+      'Mix paste into curd and gently warm on stove (Do not boil!)',
+      'Temper mustard and curry leaves in coconut oil and pour over'
+    ]
+  },
+
+  // ════════════════════════════════════════════════════════════════
+  //  NON-VEG / REGIONAL SPECIALS
+  // ════════════════════════════════════════════════════════════════
+  {
+    id: 'chettinad_chicken',
+    name: 'Chettinad Kozhi Kuzhambu',
+    cuisine_type: 'Tamil',
+    meal_type: 'lunch',
+    ingredients: ['chicken', 'onion', 'tomato', 'ginger', 'garlic', 'fennel', 'whole_spices', 'coconut'],
+    isVeg: false,
+    prep_time: 40,
+    effort_level: 'high',
+    spice_level: 'hot',
+    serves_with: 'White Rice & Rasam',
+    steps: [
+      'Dry roast fennel, whole spices, coriander, and coconut, then grind to a fine paste',
+      'Temper oil with fennel and curry leaves, sauté onions and ginger-garlic paste',
+      'Add chicken and tomatoes, cook until chicken seals',
+      'Mix in the ground masala, salt, and water',
+      'Simmer until oil floats on top and chicken is tender'
+    ]
+  },
+  {
+    id: 'pepper_chicken',
+    name: 'Pepper Chicken Fry',
+    cuisine_type: 'Tamil',
+    meal_type: 'lunch',
+    ingredients: ['chicken', 'onion', 'pepper', 'ginger', 'garlic', 'curry_leaves', 'fennel'],
+    isVeg: false,
+    prep_time: 30,
+    effort_level: 'medium',
+    spice_level: 'hot',
+    serves_with: 'Rasam Rice or Chapati',
+    steps: [
+      'Marinate chicken briefly with turmeric and salt',
+      'Coarsely grind fresh black pepper and fennel seeds',
+      'Fry onions until brown, add ginger-garlic paste and curry leaves',
+      'Toss in chicken, cook dry in its own juices',
+      'Finish with the heavy pepper-fennel powder and roast till dark'
+    ]
+  },
+  {
+    id: 'pallipalayam_chicken',
+    name: 'Pallipalayam Kozhi Varuval',
+    cuisine_type: 'Tamil',
+    meal_type: 'lunch',
+    ingredients: ['chicken', 'coconut', 'garlic', 'curry_leaves', 'turmeric'],
+    isVeg: false,
+    prep_time: 25,
+    effort_level: 'low',
+    spice_level: 'medium',
+    serves_with: 'Curd Rice',
+    steps: [
+      'Do not use onions! Heat sesame oil and fry loads of crushed garlic and dry red chilies',
+      'Add chicken pieces, turmeric, and salt; sauté well',
+      'Add a splash of water, cover and cook until done',
+      'Throw in fresh coconut slivers and roast until the dish is entirely dry'
+    ]
+  },
+  {
+    id: 'mutton_chukka',
+    name: 'Mutton Chukka',
+    cuisine_type: 'Tamil',
+    meal_type: 'lunch',
+    ingredients: ['mutton', 'onion', 'pepper', 'fennel', 'curry_leaves', 'ginger', 'garlic'],
+    isVeg: false,
+    prep_time: 45,
+    effort_level: 'high',
+    spice_level: 'hot',
+    serves_with: 'Sambar & Rice',
+    steps: [
+      'Pressure cook mutton with turmeric and ginger-garlic paste until tender',
+      'Dry roast and grind fennel, pepper, and cumin',
+      'Sauté shallots in gingelly oil until translucent',
+      'Add the cooked mutton (without water) and the ground spice mix',
+      'Roast continually on low heat until dark, dry, and aromatic'
+    ]
+  },
+  {
+    id: 'mutton_kuzhambu',
+    name: 'Mutton Kuzhambu',
+    cuisine_type: 'Tamil',
+    meal_type: 'lunch',
+    ingredients: ['mutton', 'onion', 'tomato', 'potato', 'ginger', 'garlic', 'coconut', 'whole_spices'],
+    isVeg: false,
+    prep_time: 50,
+    effort_level: 'high',
+    spice_level: 'medium',
+    serves_with: 'White Rice, Idli or Dosai',
+    steps: [
+      'Heat oil with whole spices, sauté onions, tomatoes, and ginger-garlic paste',
+      'Add mutton pieces and sauté for 5 minutes',
+      'Add masala powders, potato cubes, and water; pressure cook',
+      'Grind coconut to a milk/paste and stir it in at the end',
+      'Simmer for 5 minutes and garnish with coriander'
+    ]
+  },
+  {
+    id: 'meen_kuzhambu',
+    name: 'Meen Kuzhambu (Fish Gravy)',
+    cuisine_type: 'Tamil',
+    meal_type: 'lunch',
+    ingredients: ['fish', 'tamarind', 'onion', 'tomato', 'garlic', 'green_chili', 'curry_leaves'],
+    isVeg: false,
+    prep_time: 35,
+    effort_level: 'medium',
+    spice_level: 'hot',
+    serves_with: 'Hot White Rice (Tastes better next day!)',
+    steps: [
+      'Extract thick tamarind juice',
+      'Temper mustard, fenugreek, and lots of garlic cloves',
+      'Fry onions and tomatoes into a mush, add tamarind water and bring to an intense boil',
+      'Lower heat, gently drop in fish pieces and simmer for exactly 7-10 minutes',
+      'Turn off heat and let it rest (do not stir aggressively!)'
+    ]
+  },
+  {
+    id: 'muttai_thokku',
+    name: 'Muttai Thokku',
+    cuisine_type: 'Tamil',
+    meal_type: 'lunch',
+    ingredients: ['egg', 'onion', 'tomato', 'ginger', 'garlic', 'curry_leaves'],
+    isVeg: false,
+    prep_time: 20,
+    effort_level: 'medium',
+    spice_level: 'medium',
+    serves_with: 'Chapati, Dosai or Rice',
+    steps: [
+      'Hard boil the eggs, peel, and make small slits in the whites',
+      'Sauté finely chopped onions and tomatoes until they melt into a paste',
+      'Add ginger-garlic paste, chili powder, and salt',
+      'Drop in the boiled eggs and coat them thoroughly in the thick masala gravy'
+    ]
+  },
+  {
+    id: 'drop_egg_curry',
+    name: 'Udaithu Oothina Muttai Kuzhambu',
+    cuisine_type: 'Tamil',
+    meal_type: 'lunch',
+    ingredients: ['egg', 'onion', 'tomato', 'coconut', 'ginger', 'garlic', 'fennel'],
+    isVeg: false,
+    prep_time: 25,
+    effort_level: 'medium',
+    spice_level: 'medium',
+    serves_with: 'White Rice or Idiyappam',
+    steps: [
+      'Prepare a boiling gravy base using onions, tomatoes, and ground coconut-fennel paste',
+      'Turn the heat down to a gentle simmer',
+      'Crack raw eggs directly into the bubbling gravy (do not stir!)',
+      'Cover and cook for 5-7 minutes until eggs are perfectly poached in the masala'
+    ]
+  },
+  {
+    id: 'prawn_thokku',
+    name: 'Eral Thokku (Prawn Masala)',
+    cuisine_type: 'Tamil',
+    meal_type: 'lunch',
+    ingredients: ['prawn', 'onion', 'tomato', 'ginger', 'garlic', 'fennel', 'curry_leaves'],
+    isVeg: false,
+    prep_time: 25,
+    effort_level: 'low',
+    spice_level: 'hot',
+    serves_with: 'Rasam Rice',
+    steps: [
+      'Clean and devein prawns (they cook very fast!)',
+      'Temper fennel seeds and curry leaves',
+      'Sauté onions and tomatoes heavily to form a thick jam-like base',
+      'Add prawns and cook on medium-high for just 5-7 minutes until they curl',
+      'Finish with pepper and serve immediately'
+    ]
+  },
+
+  // ════════════════════════════════════════════════════════════════
+  //  THE GRAND BIRYANI UNIVERSE (Pan-India)
+  // ════════════════════════════════════════════════════════════════
+  {
+    id: 'hyderabadi_dum_biryani',
+    name: 'Hyderabadi Dum Biryani',
+    cuisine_type: 'Andhra/Telangana',
+    meal_type: 'lunch',
+    ingredients: ['chicken', 'basmati_rice', 'mint_leaves', 'curd', 'onion', 'ginger', 'garlic', 'whole_spices'],
+    isVeg: false,
+    prep_time: 90,
+    effort_level: 'high',
+    spice_level: 'hot',
+    serves_with: 'Mirchi Ka Salan & Onion Raita',
+    steps: [
+      'Deep fry thinly sliced onions until golden brown (Birista)',
+      'Marinate raw chicken overnight with curd, half the birista, mint, and whole spices',
+      'Boil basmati rice with whole spices until exactly 70% cooked and drain',
+      'Layer the raw marinated meat with the par-boiled rice in a heavy-bottom pot',
+      'Seal with dough (Dum) and cook on very low flame for 45 mins'
+    ]
+  },
+  {
+    id: 'dindigul_biryani',
+    name: 'Dindigul Thalappakatti Biryani',
+    cuisine_type: 'Tamil (Madurai region)',
+    meal_type: 'lunch',
+    ingredients: ['mutton', 'seeraga_samba', 'pepper', 'curd', 'mint_leaves', 'ginger', 'garlic', 'onion'],
+    isVeg: false,
+    prep_time: 60,
+    effort_level: 'high',
+    spice_level: 'hot',
+    serves_with: 'Dalcha & Onion Raita',
+    steps: [
+      'Grind small onions (shallots), ginger, and garlic into a coarse paste',
+      'Do NOT use tomatoes. Sauté the shallot paste with generous ghee and whole spices',
+      'Add mutton pieces and cook with curd, heavy black pepper, and mint',
+      'Once meat is 80% tender, add soaking Seeraga Samba rice and exact water',
+      'Dum for 20 mins until the tiny grains absorb the rich meat stock'
+    ]
+  },
+  {
+    id: 'ambur_biryani',
+    name: 'Ambur Mutton Biryani',
+    cuisine_type: 'Tamil (North Arcot)',
+    meal_type: 'lunch',
+    ingredients: ['mutton', 'seeraga_samba', 'tomato', 'onion', 'mint_leaves', 'ginger', 'garlic', 'curd'],
+    isVeg: false,
+    prep_time: 75,
+    effort_level: 'high',
+    spice_level: 'medium',
+    serves_with: 'Brinjal Ennai Kathirikai (Pachadi)',
+    steps: [
+      'Make a vibrant red paste by soaking and grinding dried red chilies',
+      'Unlike Dindigul, use large quantities of tomatoes and onions in a 1:1 ratio',
+      'Cook the mutton in the tomato-red chili base until oil separates',
+      'Par-boil Seeraga Samba rice separately (do not mix raw rice and water into meat)',
+      'Layer the cooked meat gravy and cooked rice, then dum for 15 mins'
+    ]
+  },
+  {
+    id: 'kolkata_biryani',
+    name: 'Kolkata Biryani',
+    cuisine_type: 'Bengali/Awadhi',
+    meal_type: 'lunch',
+    ingredients: ['chicken', 'basmati_rice', 'potato', 'egg', 'onion', 'whole_spices', 'curd'],
+    isVeg: false,
+    prep_time: 80,
+    effort_level: 'high',
+    spice_level: 'mild',
+    serves_with: 'Chicken Chaap & Salad',
+    steps: [
+      'Very lightly spice the chicken with subtle aromatics (no heavy chili or mint)',
+      'Deep fry large potato halves until golden, then simmer them in the meat stock',
+      'Par-boil basmati rice with whole spices',
+      'Layer meat, the flavor-soaked potatoes, boiled eggs, and rice',
+      'Drizzle heavily with rose water/kewra and dum. The hero here is the potato!'
+    ]
+  },
+  {
+    id: 'donne_biryani',
+    name: 'Bengaluru Donne Biryani',
+    cuisine_type: 'Karnataka',
+    meal_type: 'lunch',
+    ingredients: ['chicken', 'seeraga_samba', 'mint_leaves', 'coriander', 'green_chili', 'ginger', 'garlic'],
+    isVeg: false,
+    prep_time: 50,
+    effort_level: 'medium',
+    spice_level: 'hot',
+    serves_with: 'Cucumber Raita & Half-Boil Egg',
+    steps: [
+      'Grind massive amounts of mint, coriander, and green chilies into a pure green paste',
+      'Sauté the green paste in oil until the raw smell completely vanishes',
+      'Add chicken and cook in the green masala',
+      'Add short-grain Seeraga Samba rice directly into the green broth',
+      'Cook until water is absorbed and serve strictly in a dried leaf bowl (Donne)'
+    ]
+  },
+  {
+    id: 'lucknowi_biryani',
+    name: 'Awadhi (Lucknowi) Biryani',
+    cuisine_type: 'Awadhi',
+    meal_type: 'lunch',
+    ingredients: ['mutton', 'basmati_rice', 'curd', 'whole_spices', 'onion', 'ginger', 'garlic'],
+    isVeg: false,
+    prep_time: 90,
+    effort_level: 'high',
+    spice_level: 'mild',
+    serves_with: 'Burhani Raita',
+    steps: [
+      'Make a delicate Yakhni (mutton broth) using whole spices and soft cuts of meat',
+      'Strain the broth so it is completely smooth and free of whole spices',
+      'Cook the basmati rice directly in this meat milk/broth',
+      'Layer the cooked meat and the flavored rice in copper vessels',
+      'Seal tightly with dough and let the subtle floral aromas steep into the rice'
+    ]
+  }
 ];

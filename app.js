@@ -10,6 +10,8 @@
   //  STATE
   // ═══════════════════════════════════════════════════════════════
 
+  const YOUTUBE_API_KEY = ''; // Optional: Add a free YouTube v3 key here for in-app video embeds
+
   const state = {
     selectedIngredients: [],
     filters: {
@@ -26,6 +28,8 @@
     currentView: 'home',
     history: [],      // [{ dishId, date }]
     favorites: [],    // [dishId]
+    marketList: [],   // [ingredientId]
+    prepList: [],     // [prepId]
   };
 
   // ═══════════════════════════════════════════════════════════════
@@ -62,29 +66,39 @@
   const STORAGE_KEYS = {
     HISTORY: 'wtct_history',
     FAVORITES: 'wtct_favorites',
+    MARKET: 'wtct_market',
+    PREP: 'wtct_prep'
   };
 
   function loadState() {
     try {
       const h = localStorage.getItem(STORAGE_KEYS.HISTORY);
       const f = localStorage.getItem(STORAGE_KEYS.FAVORITES);
+      const m = localStorage.getItem(STORAGE_KEYS.MARKET);
+      const p = localStorage.getItem(STORAGE_KEYS.PREP);
       if (h) state.history = JSON.parse(h);
       if (f) state.favorites = JSON.parse(f);
+      if (m) state.marketList = JSON.parse(m);
+      if (p) state.prepList = JSON.parse(p);
     } catch (e) {
       console.warn('Storage load error:', e);
     }
   }
 
   function saveHistory() {
-    try {
-      localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(state.history));
-    } catch (e) { /* quota exceeded fallback */ }
+    try { localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(state.history)); } catch (e) {}
   }
 
   function saveFavorites() {
-    try {
-      localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(state.favorites));
-    } catch (e) { /* quota exceeded fallback */ }
+    try { localStorage.setItem(STORAGE_KEYS.FAVORITES, JSON.stringify(state.favorites)); } catch (e) {}
+  }
+
+  function saveMarket() {
+    try { localStorage.setItem(STORAGE_KEYS.MARKET, JSON.stringify(state.marketList)); } catch (e) {}
+  }
+
+  function savePrep() {
+    try { localStorage.setItem(STORAGE_KEYS.PREP, JSON.stringify(state.prepList)); } catch (e) {}
   }
 
   // ═══════════════════════════════════════════════════════════════
@@ -105,6 +119,7 @@
     // Render on navigate
     if (view === 'favorites') renderFavorites();
     if (view === 'history') renderHistory();
+    if (view === 'market') renderMarket();
 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -115,16 +130,41 @@
   // ═══════════════════════════════════════════════════════════════
 
   function renderIngredientGrid() {
-    els.ingredientGrid.innerHTML = INGREDIENTS.map(ing => `
-      <button class="ingredient-btn ${state.selectedIngredients.includes(ing.id) ? 'selected' : ''}"
-              data-id="${ing.id}"
-              id="ing-${ing.id}"
-              aria-label="Select ${ing.name}"
-              aria-pressed="${state.selectedIngredients.includes(ing.id)}">
-        <span class="emoji">${ing.emoji}</span>
-        <span class="label">${ing.name}</span>
-      </button>
-    `).join('');
+    const categoryLabels = {
+      'leftovers': '♻️ Use Leftovers',
+      'vegetable': '🥬 Vegetables',
+      'protein': '🍗 Meat & Protein',
+      'batter': '🥣 Batters',
+      'grain': '🌾 Grains & Dals',
+      'pantry': '🌿 Spices, Masala & Staples'
+    };
+
+    const grouped = {};
+    INGREDIENTS.forEach(ing => {
+      if (!grouped[ing.category]) grouped[ing.category] = [];
+      grouped[ing.category].push(ing);
+    });
+
+    let html = '';
+    const order = ['leftovers', 'vegetable', 'protein', 'batter', 'grain', 'pantry'];
+    
+    order.forEach(cat => {
+      if (grouped[cat] && grouped[cat].length > 0) {
+        html += `<div style="grid-column: 1 / -1; margin: 15px 0 5px; font-weight: bold; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">${categoryLabels[cat]}</div>`;
+        html += grouped[cat].map(ing => `
+          <button class="ingredient-btn ${state.selectedIngredients.includes(ing.id) ? 'selected' : ''}"
+                  data-id="${ing.id}"
+                  id="ing-${ing.id}"
+                  aria-label="Select ${ing.name}"
+                  aria-pressed="${state.selectedIngredients.includes(ing.id)}">
+            <span class="emoji">${ing.emoji}</span>
+            <span class="label">${ing.name}</span>
+          </button>
+        `).join('');
+      }
+    });
+
+    els.ingredientGrid.innerHTML = html;
   }
 
   function toggleIngredient(id) {
@@ -209,31 +249,64 @@
   function scoreDish(dish, selectedIngredients) {
     const result = { dish, score: 0, matchPercent: 0, matchedIngredients: [] };
 
+    // 0. If no ingredients are filtered, rank based on effort vs popularity
     if (selectedIngredients.length === 0) {
-      // No ingredients selected → score based on popularity (effort level as proxy)
       result.score = dish.effort_level === 'low' ? 3 : dish.effort_level === 'medium' ? 2 : 1;
       result.matchPercent = 0;
       return result;
     }
 
-    // Calculate ingredient match
-    const dishIngredients = dish.ingredients;
-    const matched = selectedIngredients.filter(i => dishIngredients.includes(i));
-    const matchPercent = matched.length / dishIngredients.length;
+    // 1. Categorize ingredients into Core vs. Pantry
+    const dishCores = [];
+    const dishPantry = [];
+    
+    dish.ingredients.forEach(id => {
+      const ing = INGREDIENTS.find(i => i.id === id);
+      // Ensure fundamental bases like onion and tomato are treated flexibly (like pantry items)
+      if (id === 'onion' || id === 'tomato') {
+        dishPantry.push(id);
+      } else if (ing && ['vegetable', 'protein', 'grain', 'batter'].includes(ing.category)) {
+        dishCores.push(id);
+      } else {
+        dishPantry.push(id); 
+      }
+    });
 
-    result.matchedIngredients = matched;
-    result.matchPercent = Math.round(matchPercent * 100);
+    const matchedCores = dishCores.filter(id => selectedIngredients.includes(id));
+    const matchedPantry = dishPantry.filter(id => selectedIngredients.includes(id));
+    
+    result.matchedIngredients = [...matchedCores, ...matchedPantry];
 
-    // Base score: ingredient match (0-10)
-    result.score = matchPercent * 10;
+    // 2. Base Scoring
+    // We enforce that Core ingredients MUST be met, otherwise heavy penalty
+    let score = matchedCores.length * 10; 
+    const missingCores = dishCores.length - matchedCores.length;
+    score -= missingCores * 15; // Strict penalty for lacking the main protein/vegetable
+    score += matchedPantry.length * 2; // Small bump for pantry items
 
-    // Bonus: user has MORE than needed (all dish ingredients covered)
-    if (matched.length >= dishIngredients.length) {
-      result.score += 2;
+    // 3. Batter Clash Penalty
+    // If the user selected a very specific batter, and this dish requires a different one -> Disqualify.
+    const selectedBatters = selectedIngredients.filter(id => {
+      const ing = INGREDIENTS.find(i => i.id === id);
+      return ing && ing.category === 'batter';
+    });
+    const dishBatters = dishCores.filter(id => {
+      const ing = INGREDIENTS.find(i => i.id === id);
+      return ing && ing.category === 'batter';
+    });
+
+    if (selectedBatters.length > 0 && dishBatters.length > 0) {
+      const matchedBatters = dishBatters.filter(b => selectedBatters.includes(b));
+      if (matchedBatters.length === 0) {
+        score -= 50; // Total clash!
+      }
     }
 
-    // Effort bonus (lower effort = slight bonus)
-    if (dish.effort_level === 'low') result.score += 0.5;
+    // 4. Final adjustments
+    if (dish.effort_level === 'low') score += 0.5;
+
+    result.score = score;
+    result.matchPercent = Math.round((result.matchedIngredients.length / dish.ingredients.length) * 100);
 
     return result;
   }
@@ -256,14 +329,15 @@
     if (filters.dinner) candidates = candidates.filter(c => c.dish.meal_type === 'dinner');
     if (filters.snack) candidates = candidates.filter(c => c.dish.meal_type === 'snack');
 
-    // If ingredients selected, require at least 60% match (or relax if no results)
+    // If ingredients selected, filter by intent
     if (selected.length > 0) {
-      const goodMatches = candidates.filter(c => c.matchPercent >= 60);
-      if (goodMatches.length >= 3) {
-        candidates = goodMatches;
+      // Score > 0 ensures they aren't missing major core ingredients
+      const validMatches = candidates.filter(c => c.score > 0);
+      if (validMatches.length > 0) {
+        candidates = validMatches;
       } else {
-        // Relax: take best available but sort by match
-        candidates = candidates.filter(c => c.matchPercent > 0);
+        // Fallback: exclude out bad batter clashes and ensure some intersection
+        candidates = candidates.filter(c => c.score > -40 && c.matchPercent > 0);
       }
     }
 
@@ -309,11 +383,22 @@
 
   function renderSuggestions(results) {
     if (results.length === 0) {
+      // Create fallback search link based on selected ingredients
+      const searchTerms = state.selectedIngredients.map(id => {
+        const ing = INGREDIENTS.find(i => i.id === id);
+        return ing ? (ing.name.includes('(') ? ing.name.split(' (')[0] : ing.name) : id;
+      }).join(' ');
+      
+      const fallbackUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent('Tamil recipe with ' + searchTerms)}`;
+
       els.dishList.innerHTML = `
         <div class="empty-state">
           <span class="emoji-large">🤷‍♀️</span>
-          <h3>No matches found</h3>
-          <p>Try selecting different ingredients or adjusting your filters.</p>
+          <h3>No matches found locally</h3>
+          <p>Try selecting different ingredients or check online!</p>
+          <a href="${fallbackUrl}" target="_blank" class="action-btn" style="background:#ff0000; color:white; text-decoration:none; display:inline-block; margin-top:15px; width:auto; padding: 10px 20px;">
+            ▶️ Search YouTube Instead
+          </a>
         </div>`;
       return;
     }
@@ -380,6 +465,26 @@
   }
 
   // ═══════════════════════════════════════════════════════════════
+  //  YOUTUBE INTEGRATION
+  // ═══════════════════════════════════════════════════════════════
+
+  async function fetchYouTubeVideo(dishName) {
+    if (!YOUTUBE_API_KEY) return null;
+    try {
+      const query = encodeURIComponent(`Tamil home cooking ${dishName} recipe`);
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&maxResults=1&key=${YOUTUBE_API_KEY}&type=video`;
+      const response = await fetch(url);
+      const data = await response.json();
+      if (data.items && data.items.length > 0) {
+        return data.items[0].id.videoId;
+      }
+    } catch (e) {
+      console.warn("YouTube API Error:", e);
+    }
+    return null;
+  }
+
+  // ═══════════════════════════════════════════════════════════════
   //  RECIPE MODAL
   // ═══════════════════════════════════════════════════════════════
 
@@ -388,10 +493,15 @@
     if (!dish) return;
 
     const isFav = state.favorites.includes(dish.id);
-    const ingredientNames = dish.ingredients.map(id => {
+    const ingredientHtml = dish.ingredients.map(id => {
       const ing = INGREDIENTS.find(i => i.id === id);
-      return ing ? `${ing.emoji} ${ing.name}` : id;
-    });
+      const name = ing ? `${ing.emoji} ${ing.name}` : id;
+      const inMarket = state.marketList.includes(id);
+      return `<span class="selected-tag" style="background: var(--bg-hover); color: var(--text-primary); display:flex; align-items:center; gap:8px; padding-right: 4px; font-size: 0.85rem;">
+                ${name} 
+                <button aria-label="Add to Market" onclick="window.toggleMarketItem('${id}'); this.innerHTML='✓'; this.style.background='var(--primary-color)';" style="background:${inMarket ? 'var(--primary-color)' : 'rgba(0,0,0,0.1)'}; border:none; border-radius:50%; color:white; width:22px; height:22px; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Add to Shopping List">${inMarket ? '✓' : '+'}</button>
+              </span>`;
+    }).join('');
 
     els.recipeBody.innerHTML = `
       <h2 class="modal-dish-name">${dish.name}</h2>
@@ -406,13 +516,19 @@
       </div>
 
       ${dish.serves_with ? `
-      <div style="margin: 10px 0; background: var(--bg-hover); padding: 10px; border-radius: 8px; font-size: 0.9rem;">
-        <strong>Best served with:</strong> ${dish.serves_with}
+      <div style="margin: 10px 0; background: #fff3e0; padding: 12px; border-radius: 8px; font-size: 0.95rem; border-left: 4px solid #ff9800; color: #e65100;">
+        <strong>🍽️ Complete the Meal:</strong> Pair with ${dish.serves_with}
+      </div>` : ''}
+
+      ${dish.ingredients.includes('batter_fermented') ? `
+      <div style="margin: 10px 0; background: #e3f2fd; padding: 10px; border-radius: 8px; font-size: 0.85rem; border-left: 4px solid #2196f3; display:flex; justify-content:space-between; align-items:center;">
+        <span>⚠️ Needs overnight batter!</span>
+        <button onclick="window.togglePrepItem('prep_idli', true); window.showToast('Added to Tonight\\'s Prep 🕒');" style="background:#2196f3; color:white; border:none; border-radius:4px; padding:4px 8px; font-size:0.75rem; cursor:pointer;">Add to Prep</button>
       </div>` : ''}
 
       <div class="section-title"><span class="icon">🥘</span> Ingredients</div>
       <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px;">
-        ${ingredientNames.map(n => `<span class="selected-tag" style="cursor:default; background: var(--text-secondary);">${n}</span>`).join('')}
+        ${ingredientHtml}
       </div>
 
       <div class="section-title"><span class="icon">👨‍🍳</span> Instructions</div>
@@ -420,7 +536,13 @@
         ${(dish.steps || []).map(step => `<li style="margin-bottom: 8px;">${step}</li>`).join('')}
       </ol>
 
-      <div class="modal-actions">
+      <div id="youtube-container" style="margin-top: 15px; text-align: center;">
+        <button id="loadVideoBtn" class="action-btn btn-secondary" style="width: 100%; border: 1px solid #ff0000; color: #ff0000; background: transparent;">
+          <span class="icon">▶️</span> Watch YouTube Recipe
+        </button>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 15px;">
         <button class="action-btn btn-primary" id="modalCookedBtn" data-dish-id="${dish.id}">
           ✅ I Cooked This!
         </button>
@@ -434,6 +556,36 @@
     document.body.style.overflow = 'hidden';
 
     // Wire up modal buttons
+    $('#loadVideoBtn').addEventListener('click', async () => {
+      const container = $('#youtube-container');
+      
+      if (!YOUTUBE_API_KEY) {
+        // Fallback if no API key is provided
+        const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent('Tamil recipe ' + dish.name)}`;
+        container.innerHTML = `
+          <a href="${searchUrl}" target="_blank" class="action-btn" style="background:#ff0000; color:white; text-decoration:none; display:inline-block; padding: 10px;">
+            ▶️ Open YouTube Search
+          </a>
+          <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:8px;">Add a free YouTube API key in code to embed videos here</div>
+        `;
+        return;
+      }
+
+      container.innerHTML = '<div style="padding: 10px; color: var(--text-secondary);">Loading video...</div>';
+      const videoId = await fetchYouTubeVideo(dish.name);
+      
+      if (videoId) {
+        container.innerHTML = `
+          <iframe width="100%" height="215" style="border-radius: 8px; border: none; margin-top: 5px;" 
+                  src="https://www.youtube.com/embed/${videoId}?autoplay=1" 
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                  allowfullscreen></iframe>
+        `;
+      } else {
+        container.innerHTML = '<div style="color: red; padding: 10px;">Could not load video.</div>';
+      }
+    });
+
     $('#modalCookedBtn').addEventListener('click', () => {
       addToHistory(dish.id);
       closeModal();
@@ -567,6 +719,98 @@
   }
 
   // ═══════════════════════════════════════════════════════════════
+  //  MARKET / SHOPPING LIST
+  // ═══════════════════════════════════════════════════════════════
+
+  function toggleMarketItem(ingredientId) {
+    const idx = state.marketList.indexOf(ingredientId);
+    if (idx === -1) {
+      state.marketList.push(ingredientId);
+      showToast('Added to list 🛒');
+    } else {
+      state.marketList.splice(idx, 1);
+    }
+    saveMarket();
+    if (state.currentView === 'market') renderMarket();
+  }
+  window.toggleMarketItem = toggleMarketItem;
+
+
+  function renderMarket() {
+    const container = $('#marketList');
+    if (!container) return;
+    
+    if (state.marketList.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <span class="emoji-large">🛒</span>
+          <h3>Your list is empty</h3>
+          <p>Add missing ingredients to buy them later!</p>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = state.marketList.map(mid => {
+      const ing = INGREDIENTS.find(i => i.id === mid) || { id: mid, name: mid, emoji: '🛒' };
+      return `
+        <div class="history-item" style="display:flex; justify-content:space-between; align-items:center;">
+          <div><span style="margin-right:10px;">${ing.emoji}</span> ${ing.name}</div>
+          <button class="action-btn" style="padding: 5px 10px; min-width: auto; background:var(--bg-hover);" onclick="window.removeMarketItem('${mid}')">✅</button>
+        </div>`;
+    }).join('');
+
+    container.innerHTML += `<button class="clear-btn" style="margin-top:20px;" onclick="window.clearMarketList()">🗑️ Clear List</button>`;
+  }
+
+  window.removeMarketItem = (id) => {
+    state.marketList = state.marketList.filter(i => i !== id);
+    saveMarket();
+    renderMarket();
+  };
+
+  window.clearMarketList = () => {
+    state.marketList = [];
+    saveMarket();
+    renderMarket();
+  };
+
+  // ═══════════════════════════════════════════════════════════════
+  //  TONIGHT'S PREP TRACKER
+  // ═══════════════════════════════════════════════════════════════
+
+  const PREP_ITEMS_DATA = [
+    { id: 'prep_idli', text: 'Soak Urad Dal & Rice (For Idli/Dosai)' },
+    { id: 'prep_curd', text: 'Set Milk for Curd Overnight' },
+    { id: 'prep_chana', text: 'Soak Chana/Rajma (For Sundal/Curry)' }
+  ];
+
+  function renderPrepTracker() {
+    const container = $('#prepTracker');
+    if (!container) return;
+
+    container.innerHTML = PREP_ITEMS_DATA.map(item => {
+      const isDone = state.prepList.includes(item.id);
+      return `
+        <label style="display:flex; align-items:center; margin-bottom:8px; cursor:pointer; color: ${isDone ? 'var(--text-secondary)' : 'var(--text-primary)'}; text-decoration: ${isDone ? 'line-through' : 'none'};">
+          <input type="checkbox" style="margin-right:10px; transform:scale(1.2);"
+                 onchange="window.togglePrepItem('${item.id}', this.checked)" ${isDone ? 'checked' : ''}>
+          ${item.text}
+        </label>
+      `;
+    }).join('');
+  }
+
+  window.togglePrepItem = (id, isChecked) => {
+    if (isChecked) {
+      if (!state.prepList.includes(id)) state.prepList.push(id);
+    } else {
+      state.prepList = state.prepList.filter(i => i !== id);
+    }
+    savePrep();
+    renderPrepTracker();
+  };
+
+  // ═══════════════════════════════════════════════════════════════
   //  TOAST
   // ═══════════════════════════════════════════════════════════════
 
@@ -615,8 +859,10 @@
   // ═══════════════════════════════════════════════════════════════
 
   function init() {
+    window.showToast = showToast;
     loadState();
     renderIngredientGrid();
+    renderPrepTracker();
     updateIngredientUI();
     updateFilterUI();
 
@@ -647,7 +893,10 @@
       renderSuggestions(results);
 
       // Update intro text
-      if (state.selectedIngredients.length === 0) {
+      if (state.filters.nonveg) {
+        els.suggestionIntro.querySelector('.intro-text').innerHTML =
+          '<strong>🍗 Sunday Special!</strong> Here are an authentic set of South Indian Non-Veg treats!';
+      } else if (state.selectedIngredients.length === 0) {
         els.suggestionIntro.querySelector('.intro-text').innerHTML =
           'Here are some <strong>easy everyday dishes</strong> to get you started!';
       } else {
