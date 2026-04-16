@@ -18,8 +18,10 @@
       quick: false,
       lowEffort: false,
       spicy: false,
-      tamil: false,
-      andhra: false
+      breakfast: false,
+      lunch: false,
+      dinner: false,
+      snack: false
     },
     currentView: 'home',
     history: [],      // [{ dishId, date }]
@@ -175,9 +177,12 @@
     if (filterKey === 'veg' && state.filters.nonveg) state.filters.nonveg = false;
     if (filterKey === 'nonveg' && state.filters.veg) state.filters.veg = false;
 
-    // Mutually exclusive: tamil & andhra
-    if (filterKey === 'tamil' && state.filters.andhra) state.filters.andhra = false;
-    if (filterKey === 'andhra' && state.filters.tamil) state.filters.tamil = false;
+    // Mutually exclusive: breakfast, lunch, dinner, snack
+    if (['breakfast', 'lunch', 'dinner', 'snack'].includes(filterKey)) {
+      ['breakfast', 'lunch', 'dinner', 'snack'].forEach(k => {
+        if (k !== filterKey) state.filters[k] = false;
+      });
+    }
 
     state.filters[filterKey] = !state.filters[filterKey];
     updateFilterUI();
@@ -246,8 +251,10 @@
     if (filters.quick) candidates = candidates.filter(c => c.dish.prep_time <= 20);
     if (filters.lowEffort) candidates = candidates.filter(c => c.dish.effort_level === 'low');
     if (filters.spicy) candidates = candidates.filter(c => c.dish.spice_level === 'hot');
-    if (filters.tamil) candidates = candidates.filter(c => c.dish.cuisine_type === 'Tamil');
-    if (filters.andhra) candidates = candidates.filter(c => c.dish.cuisine_type === 'Andhra');
+    if (filters.breakfast) candidates = candidates.filter(c => c.dish.meal_type === 'breakfast');
+    if (filters.lunch) candidates = candidates.filter(c => c.dish.meal_type === 'lunch');
+    if (filters.dinner) candidates = candidates.filter(c => c.dish.meal_type === 'dinner');
+    if (filters.snack) candidates = candidates.filter(c => c.dish.meal_type === 'snack');
 
     // If ingredients selected, require at least 60% match (or relax if no results)
     if (selected.length > 0) {
@@ -270,33 +277,7 @@
     // Sort by score descending
     candidates.sort((a, b) => b.score - a.score);
 
-    // Ensure cuisine diversity in top 5
-    const result = [];
-    let tamilCount = 0;
-    let andhraCount = 0;
-    const backup = [];
-
-    for (const c of candidates) {
-      if (result.length >= 5) break;
-
-      if (c.dish.cuisine_type === 'Tamil') {
-        if (tamilCount < 3) { result.push(c); tamilCount++; }
-        else backup.push(c);
-      } else {
-        if (andhraCount < 3) { result.push(c); andhraCount++; }
-        else backup.push(c);
-      }
-    }
-
-    // Fill remaining slots from backup
-    while (result.length < 5 && backup.length > 0) {
-      result.push(backup.shift());
-    }
-
-    // Re-sort final result by score
-    result.sort((a, b) => b.score - a.score);
-
-    return result;
+    return candidates.slice(0, 8);
   }
 
   function surpriseMe() {
@@ -311,21 +292,12 @@
     if (filters.quick) pool = pool.filter(d => d.prep_time <= 20);
     if (filters.lowEffort) pool = pool.filter(d => d.effort_level === 'low');
     if (filters.spicy) pool = pool.filter(d => d.spice_level === 'hot');
-    if (filters.tamil) pool = pool.filter(d => d.cuisine_type === 'Tamil');
-    if (filters.andhra) pool = pool.filter(d => d.cuisine_type === 'Andhra');
+    if (filters.breakfast) pool = pool.filter(d => d.meal_type === 'breakfast');
+    if (filters.lunch) pool = pool.filter(d => d.meal_type === 'lunch');
+    if (filters.dinner) pool = pool.filter(d => d.meal_type === 'dinner');
+    if (filters.snack) pool = pool.filter(d => d.meal_type === 'snack');
 
     if (pool.length === 0) pool = DISHES; // Fallback
-
-    // Try to balance cuisine
-    const lastCuisine = state.history.length > 0
-      ? DISHES.find(d => d.id === state.history[0].dishId)?.cuisine_type
-      : null;
-
-    // Prefer opposite cuisine for variety
-    if (lastCuisine) {
-      const opposite = pool.filter(d => d.cuisine_type !== lastCuisine);
-      if (opposite.length > 0) pool = opposite;
-    }
 
     const pick = pool[Math.floor(Math.random() * pool.length)];
     return [{ dish: pick, score: 10, matchPercent: 100, matchedIngredients: [] }];
@@ -360,11 +332,12 @@
           </button>
         </div>
         <div class="dish-badges">
-          <span class="badge ${d.cuisine_type === 'Tamil' ? 'badge-tamil' : 'badge-andhra'}">
-            ${d.cuisine_type === 'Tamil' ? '🏛️' : '🌶️'} ${d.cuisine_type}
-          </span>
+          <span class="badge badge-tamil">🏛️ Tamil Nadu</span>
           <span class="badge ${d.isVeg ? 'badge-veg' : 'badge-nonveg'}">
             ${d.isVeg ? '🥬 Veg' : '🍗 Non-Veg'}
+          </span>
+          <span class="badge badge-meal">
+            ${d.meal_type === 'breakfast' ? '🌅' : d.meal_type === 'lunch' ? '🍚' : d.meal_type === 'snack' ? '☕' : '🌙'} ${d.meal_type ? d.meal_type.charAt(0).toUpperCase() + d.meal_type.slice(1) : ''}
           </span>
         </div>
         <div class="dish-meta">
@@ -423,9 +396,7 @@
     els.recipeBody.innerHTML = `
       <h2 class="modal-dish-name">${dish.name}</h2>
       <div class="modal-meta">
-        <span class="badge ${dish.cuisine_type === 'Tamil' ? 'badge-tamil' : 'badge-andhra'}">
-          ${dish.cuisine_type === 'Tamil' ? '🏛️' : '🌶️'} ${dish.cuisine_type}
-        </span>
+        <span class="badge badge-tamil">🏛️ Tamil Nadu</span>
         <span class="badge ${dish.isVeg ? 'badge-veg' : 'badge-nonveg'}">
           ${dish.isVeg ? '🥬 Veg' : '🍗 Non-Veg'}
         </span>
@@ -434,19 +405,19 @@
         </span>
       </div>
 
+      ${dish.serves_with ? `
+      <div style="margin: 10px 0; background: var(--bg-hover); padding: 10px; border-radius: 8px; font-size: 0.9rem;">
+        <strong>Best served with:</strong> ${dish.serves_with}
+      </div>` : ''}
+
       <div class="section-title"><span class="icon">🥘</span> Ingredients</div>
       <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px;">
         ${ingredientNames.map(n => `<span class="selected-tag" style="cursor:default; background: var(--text-secondary);">${n}</span>`).join('')}
       </div>
 
-      <div class="section-title"><span class="icon">👩‍🍳</span> Steps</div>
-      <ol class="recipe-steps">
-        ${dish.steps.map((step, i) => `
-          <li class="recipe-step">
-            <span class="step-number">${i + 1}</span>
-            <span class="step-text">${step}</span>
-          </li>
-        `).join('')}
+      <div class="section-title"><span class="icon">👨‍🍳</span> Instructions</div>
+      <ol style="margin-bottom: 20px; padding-left: 20px; color: var(--text-secondary); font-size: 0.95rem;">
+        ${(dish.steps || []).map(step => `<li style="margin-bottom: 8px;">${step}</li>`).join('')}
       </ol>
 
       <div class="modal-actions">

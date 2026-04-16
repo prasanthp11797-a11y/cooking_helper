@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="description" content="What to Cook Today? - Daily cooking decision assistant for South Indian homemakers. Find Tamil Nadu and Andhra-style home cooking suggestions based on your available ingredients." />
+  <meta name="description" content="What to Cook Today? - Daily cooking decision assistant for South Indian homemakers. Find Tamil Nadu home cooking suggestions and tiffins based on your available ingredients." />
   <meta name="theme-color" content="#e65100" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -24,7 +24,7 @@
     <!-- ─── Header ─── -->
     <header class="app-header" id="app-header">
       <h1><span class="emoji-icon">🍛</span> What to Cook Today?</h1>
-      <p class="subtitle">Tamil Nadu &amp; Andhra Home Cooking</p>
+      <p class="subtitle">Tamil Nadu Home Cooking</p>
       <div class="header-actions">
         <button class="header-btn install-btn" id="installHeaderBtn" title="Install App" aria-label="Install App">📲</button>
       </div>
@@ -53,8 +53,10 @@
         <button class="filter-chip" data-filter="quick" id="filter-quick">⚡ Quick</button>
         <button class="filter-chip" data-filter="lowEffort" id="filter-lowEffort">😌 Easy</button>
         <button class="filter-chip" data-filter="spicy" id="filter-spicy">🌶️ Spicy</button>
-        <button class="filter-chip" data-filter="tamil" id="filter-tamil">🏛️ Tamil</button>
-        <button class="filter-chip" data-filter="andhra" id="filter-andhra">🌶️ Andhra</button>
+        <button class="filter-chip meal-filter" data-filter="breakfast" id="filter-breakfast">🌅 Breakfast</button>
+        <button class="filter-chip meal-filter" data-filter="lunch" id="filter-lunch">🍚 Lunch</button>
+        <button class="filter-chip meal-filter" data-filter="snack" id="filter-snack">☕ Snack</button>
+        <button class="filter-chip meal-filter" data-filter="dinner" id="filter-dinner">🌙 Dinner</button>
       </div>
 
       <!-- Ingredient Selection -->
